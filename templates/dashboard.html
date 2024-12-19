@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}StudySitare - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Welcome, {{ current_user.name }}!</h2>
+    <p>Semester: {{ current_user.semester }}</p>
+
+    <div class="row mt-4">
+        <!-- Profile Info -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Profile Information</h5>
+                    <p>Name: {{ current_user.name }}</p>
+                    <p>Student ID: {{ current_user.student_id }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Semester -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Current Semester</h5>
+                    <a href="{{ url_for('semester', sem_num=current_user.semester) }}" class="btn btn-primary">
+                        View Materials
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Learning Progress</h5>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: {{ overall_progress }}%;" 
+                             aria-valuenow="{{ overall_progress }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">{{ overall_progress }}%</div>
+                    </div>
+                    <p>Completed: {{ completed_topics }}/{{ total_topics }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subjects List -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <h3>Your Subjects</h3>
+            <div class="list-group">
+                {% for subject in subjects %}
+                <a href="{{ url_for('subject', subject_id=subject.id) }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ subject.name }}</h5>
+                        {% set subject_progress = progress|selectattr('subject_id', 'equalto', subject.id)|first|default(none) %}
+                        {% if subject_progress %}
+                            <small>{{ subject_progress.completed_topics }}/{{ subject_progress.total_topics }}</small>
+                        {% endif %}
+                    </div>
+                    {% if subject.description %}
+                        <p class="mb-1">{{ subject.description }}</p>
+                    {% endif %}
+                    {% if subject_progress %}
+                        <div class="progress mt-2" style="height: 5px;">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {{ (subject_progress.completed_topics / subject_progress.total_topics * 100)|round }}%">
+                            </div>
+                        </div>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

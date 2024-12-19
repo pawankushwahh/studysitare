@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}StudySitare - Edit Subject{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Edit Subject</li>
+            </ol>
+        </nav>
+        <h2 class="mb-4">Edit Subject: {{ subject.name }}</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="subject_name" class="form-label">Subject Name</label>
+                        <input type="text" class="form-control" id="subject_name" name="subject_name" value="{{ subject.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject_semester" class="form-label">Semester</label>
+                        <select class="form-control" id="subject_semester" name="subject_semester" required>
+                            {% for i in range(1, 7) %}
+                            <option value="{{ i }}" {% if subject.semester == i %}selected{% endif %}>Semester {{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject_syllabus" class="form-label">Syllabus</label>
+                        <textarea class="form-control" id="subject_syllabus" name="subject_syllabus" rows="6">{{ subject.syllabus }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Topics</h5>
+                <div class="list-group">
+                    {% for topic in subject.topics %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <h6 class="mb-1">{{ topic.name }}</h6>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#editTopic{{ topic.id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form action="{{ url_for('delete_topic', topic_id=topic.id) }}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this topic?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Edit Topic Modal -->
+                    <div class="modal fade" id="editTopic{{ topic.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Edit Topic</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <form action="{{ url_for('edit_topic', topic_id=topic.id) }}" method="POST" enctype="multipart/form-data">
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="topic_name{{ topic.id }}" class="form-label">Topic Name</label>
+                                            <input type="text" class="form-control" id="topic_name{{ topic.id }}" name="topic_name" value="{{ topic.name }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="video_links{{ topic.id }}" class="form-label">Video Links (One per line)</label>
+                                            <textarea class="form-control" id="video_links{{ topic.id }}" name="video_links" rows="3">{{ topic.video_links }}</textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="topic_resources{{ topic.id }}" class="form-label">Additional Resources</label>
+                                            <textarea class="form-control" id="topic_resources{{ topic.id }}" name="topic_resources" rows="3">{{ topic.resources }}</textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="notes_file{{ topic.id }}" class="form-label">Upload New Notes (PDF)</label>
+                                            <input type="file" class="form-control" id="notes_file{{ topic.id }}" name="notes_file" accept=".pdf">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

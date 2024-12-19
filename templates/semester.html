@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}StudySitare - Semester {{ semester }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Semester {{ semester }}</li>
+            </ol>
+        </nav>
+        <h2 class="mb-4">Semester {{ semester }} Resources</h2>
+    </div>
+</div>
+
+{% if subjects %}
+<div class="row">
+    {% for subject in subjects %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-book me-2 text-primary"></i>
+                    {{ subject.name }}
+                </h5>
+                {% if subject.syllabus %}
+                <p class="card-text">{{ subject.syllabus|truncate(150) }}</p>
+                {% else %}
+                <p class="card-text text-muted">Syllabus will be updated soon.</p>
+                {% endif %}
+                
+                {% if subject.topics %}
+                <div class="mb-3">
+                    <h6 class="mb-2">Topics Covered:</h6>
+                    <ul class="list-unstyled">
+                        {% for topic in subject.topics[:3] %}
+                        <li>
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            {{ topic.name }}
+                        </li>
+                        {% endfor %}
+                        {% if subject.topics|length > 3 %}
+                        <li class="text-muted">
+                            <i class="fas fa-ellipsis-h me-2"></i>
+                            And {{ subject.topics|length - 3 }} more topics...
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                <a href="{{ url_for('subject', subject_id=subject.id) }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-right me-2"></i>
+                    View Details
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            No subjects have been added for this semester yet. Check back later!
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if current_user.is_admin %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Admin Actions</h5>
+                <a href="#" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>
+                    Add New Subject
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

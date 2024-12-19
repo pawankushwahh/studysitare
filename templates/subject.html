@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}StudySitare - {{ subject.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('semester', sem_num=subject.semester) }}">Semester {{ subject.semester }}</a></li>
+                <li class="breadcrumb-item active">{{ subject.name }}</li>
+            </ol>
+        </nav>
+        <h2 class="mb-4">{{ subject.name }}</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-book me-2 text-primary"></i>
+                    Syllabus
+                </h5>
+                {% if subject.syllabus %}
+                <p class="card-text">{{ subject.syllabus }}</p>
+                {% else %}
+                <p class="card-text text-muted">Syllabus will be updated soon.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if subject.topics %}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-list me-2 text-success"></i>
+                    Topics
+                </h5>
+                <div class="list-group">
+                    {% for topic in subject.topics %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-2">{{ topic.name }}</h6>
+                            <small class="text-muted">Topic {{ loop.index }}</small>
+                        </div>
+                        {% if topic.video_links %}
+                        <div class="mb-2">
+                            <strong><i class="fab fa-youtube text-danger me-2"></i>Video Resources:</strong>
+                            <div class="mt-2">
+                                {% for link in topic.video_links.split('\n') %}
+                                <a href="{{ link }}" class="btn btn-sm btn-outline-danger mb-1" target="_blank">
+                                    <i class="fas fa-play-circle me-1"></i>
+                                    Watch Video {{ loop.index }}
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if topic.resources %}
+                        <div>
+                            <strong><i class="fas fa-file-alt text-info me-2"></i>Additional Resources:</strong>
+                            <p class="mb-0 mt-1">{{ topic.resources }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Topics will be added soon. Check back later!
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-info-circle me-2 text-info"></i>
+                    Quick Info
+                </h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-graduation-cap me-2"></i>
+                        <strong>Semester:</strong> {{ subject.semester }}
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-list-ol me-2"></i>
+                        <strong>Topics:</strong> {{ subject.topics|length }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        {% if current_user.is_admin %}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Admin Actions</h5>
+                <div class="d-grid gap-2">
+                    <a href="#" class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i>
+                        Add New Topic
+                    </a>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>
+                        Edit Subject
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
